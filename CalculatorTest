@@ -1,0 +1,54 @@
+using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium;
+
+namespace WebDrivenTestCalculate
+{
+    public class WebDrivenCalculatorTests
+    {
+        private ChromeDriver driver;
+        IWebElement field1;
+        IWebElement field2;
+        IWebElement operation;
+        IWebElement calculate;
+        IWebElement resultField;
+        IWebElement clearFields;
+
+        [OneTimeSetUp]
+        public void OpenAndNavigate()
+        {
+            this.driver = new ChromeDriver();
+            driver.Url = "https://number-calculator.nakov.repl.co/";
+            driver.Manage().Window.Maximize();
+
+            field1 = driver.FindElement(By.Id("number1"));
+            field2 = driver.FindElement(By.Id("number2"));
+            operation = driver.FindElement(By.Id("operation"));
+            calculate = driver.FindElement(By.Id("calcButton"));
+            resultField = driver.FindElement(By.Id("result"));
+            clearFields = driver.FindElement(By.Id("resetButton"));
+        }
+
+        [OneTimeTearDown]
+        public void ShutDown()
+        {
+            driver.Close();
+        }
+
+        [TestCase ("5", "+", "8", "Result: 13")]
+        [TestCase("10", "+", "6", "Result: 16")]
+        [TestCase("10", "-", "6", "Result: 4")]
+        [TestCase("126", "-", "6", "Result: 120")]
+        public void Test_Calculator(string num1, string operato, string num2, string result)
+        {
+            field1.SendKeys(num1);
+            operation.SendKeys(operato);
+            field2.SendKeys(num2);
+
+            calculate.Click();
+
+            Assert.That(result, Is.EqualTo(resultField.Text));
+
+            clearFields.Click(); 
+        }
+    }
+}
